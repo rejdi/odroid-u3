@@ -1,0 +1,26 @@
+From 77173ff2e922479fdfb7e8621e0857dfa2ebfa1f Mon Sep 17 00:00:00 2001
+From: Bruno Gouveia <bgouveia@gmail.com>
+Date: Sun, 11 Oct 2015 15:51:28 +0100
+Subject: [PATCH] enable Hi10P support for MFC (Software decoder)
+
+---
+ xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecMFC.cpp | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecMFC.cpp b/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecMFC.cpp
+index 07743a2288d2..97c2c67d192f 100644
+--- a/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecMFC.cpp
++++ b/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecMFC.cpp
+@@ -280,6 +280,12 @@ bool CDVDVideoCodecMFC::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options) {
+       m_name = "mfc-h263";
+       break;
+     case AV_CODEC_ID_H264:
++      switch(hints.profile)
++      {
++        case FF_PROFILE_H264_HIGH_10:
++        case FF_PROFILE_H264_HIGH_10_INTRA:
++          return false;
++      }
+       fmt.fmt.pix_mp.pixelformat = V4L2_PIX_FMT_H264;
+       m_name = "mfc-h264";
+       break;

@@ -1,0 +1,36 @@
+From 0e5291cb1b9ab93db0cf1a782bc5a4c947ab61bd Mon Sep 17 00:00:00 2001
+From: mapfau <mafpau@users.noreply.github.com>
+Date: Fri, 5 Jun 2015 18:14:30 +0200
+Subject: [PATCH] Update DVDVideoCodecMFC.cpp
+
+Adapted from DVDCodecAML, adjust the aspect ratio of the decoded image respecting the screen resolution.
+Respecting aspect ratio lets the viseos appear correct instead sctretched if their dimensions don't fit to the screen resolution.
+
+Positive side effect: Kodi determines better 4:3 and adjust it automaticly to "Normal" size if the setting: "Automaticly adjust 4:3 videos" is choosen.
+
+Tested with LiveTV and many different video dimensions.
+---
+ .../VideoPlayer/DVDCodecs/Video/DVDVideoCodecMFC.cpp     | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecMFC.cpp b/xbmc/cores/dvdplayer/DVDCodecs/Video/DVDVideoCodecMFC.cpp
+index 01a46c08cd4a..8141309b4ab6 100644
+--- a/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecMFC.cpp
++++ b/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecMFC.cpp
+@@ -400,6 +400,16 @@ bool CDVDVideoCodecMFC::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options) {
+   m_videoBuffer.iWidth          = resultVideoWidth;
+   m_videoBuffer.iHeight         = resultVideoHeight;
+ 
++  if (m_hints.aspect > 0.0 && !m_hints.forced_aspect)
++  {
++    m_videoBuffer.iDisplayWidth  = ((int)lrint(m_videoBuffer.iHeight * m_hints.aspect)) & -3;
++    if (m_videoBuffer.iDisplayWidth > m_videoBuffer.iWidth)
++    {
++      m_videoBuffer.iDisplayWidth  = m_videoBuffer.iWidth;
++      m_videoBuffer.iDisplayHeight = ((int)lrint(m_videoBuffer.iWidth / m_hints.aspect)) & -3;
++    }
++  }
++
+   m_videoBuffer.data[0]         = NULL;
+   m_videoBuffer.data[1]         = NULL;
+   m_videoBuffer.data[2]         = NULL;
